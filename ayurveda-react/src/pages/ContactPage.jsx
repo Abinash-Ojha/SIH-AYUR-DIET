@@ -4,13 +4,13 @@ import Footer from "../Footer";
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-amber-300 via-green-200 to-orange-300">
+    <div className="min-h-screen w-full bg-white">
       <Navbar />
 
-      <main className="max-w-4xl mx-auto px-6 py-12 mt-10 font-[Poppins]">
+      <main className="max-w-4xl mx-auto px-6 py-16 mt-10 font-[Poppins]">
         {/* Hero */}
         <section className="text-center max-w-2xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-extrabold leading-tight">
+          <h2 className="text-3xl md:text-4xl font-extrabold leading-tight text-emerald-600">
             Get in Touch
           </h2>
           <p className="mt-4 text-gray-700">
@@ -21,10 +21,12 @@ export default function ContactPage() {
         </section>
 
         {/* Contact Section */}
-        <section className="mt-12 grid md:grid-cols-2 gap-8">
+        <section className="mt-14 grid md:grid-cols-2 gap-8">
           {/* Info */}
-          <div className="bg-gradient-to-br from-amber-200 via-green-100 to-orange-200 rounded-2xl shadow p-6">
-            <h3 className="text-lg font-semibold">Contact Information</h3>
+          <div className="bg-emerald-50 rounded-2xl shadow p-6 border">
+            <h3 className="text-lg font-semibold text-emerald-700">
+              Contact Information
+            </h3>
             <ul className="mt-4 space-y-3 text-gray-700 text-sm">
               <li>
                 <strong>Email:</strong>{" "}
@@ -48,8 +50,10 @@ export default function ContactPage() {
           </div>
 
           {/* Form */}
-          <form className="bg-gradient-to-br from-amber-200 via-green-100 to-orange-200 rounded-2xl shadow p-6">
-            <h3 className="text-lg font-semibold">Send us a Message</h3>
+          <form className="bg-white border rounded-2xl shadow p-6">
+            <h3 className="text-lg font-semibold text-emerald-700">
+              Send us a Message
+            </h3>
             <div className="mt-4 space-y-4">
               <div>
                 <label className="block text-sm font-medium">Name</label>
@@ -86,8 +90,10 @@ export default function ContactPage() {
         </section>
 
         {/* CTA */}
-        <section className="mt-14 bg-gradient-to-r from-amber-300 via-green-200 to-orange-300 p-8 rounded-2xl text-center">
-          <h3 className="text-2xl font-semibold">Let’s Collaborate</h3>
+        <section className="mt-16 bg-emerald-50 p-8 rounded-2xl text-center shadow border">
+          <h3 className="text-2xl font-semibold text-emerald-600">
+            Let’s Collaborate
+          </h3>
           <p className="mt-3 text-gray-700 max-w-2xl mx-auto">
             We’re open to partnerships with clinics, Ayurvedic centers, and
             health tech innovators. Together, we can bring personalized

@@ -10,6 +10,8 @@ import {
   Heart,
   Stethoscope,
   CreditCard,
+  Sparkles,
+  ArrowRight,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -27,26 +29,28 @@ const InputField = ({
   disabled,
   rightElement,
 }) => (
-  <div className="relative">
-    <Icon className="absolute left-4 top-4 text-green-500" size={20} />
+  <div className="relative group">
+    <Icon className="absolute left-4 top-4 text-violet-500 group-focus-within:text-violet-600 transition-colors duration-300 z-10" size={20} />
     <input
       type={type}
       placeholder={placeholder}
       value={value}
       onChange={onChange}
       disabled={disabled}
-      className="w-full pl-14 pr-14 py-4 border-2 border-green-200 rounded-2xl focus:ring-2 focus:ring-amber-300 focus:border-amber-500 transition-all bg-gradient-to-r from-green-50 to-amber-50 font-light"
+      className="w-full pl-14 pr-14 py-4 border-2 border-slate-200/60 rounded-2xl focus:ring-4 focus:ring-violet-500/20 focus:border-violet-500 transition-all duration-300 bg-white/80 backdrop-blur-sm font-medium text-slate-700 placeholder:text-slate-400 shadow-lg hover:shadow-xl hover:bg-white group-focus-within:bg-white"
     />
     {rightElement && (
       <button
         type="button"
         onClick={rightElement.onClick}
-        className="absolute right-4 top-4 text-green-400 hover:text-amber-600"
+        className="absolute right-4 top-4 text-slate-400 hover:text-violet-600 transition-colors duration-200 z-10"
         tabIndex={-1}
       >
         {rightElement.icon}
       </button>
     )}
+    {/* Animated border */}
+    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 -z-10 blur-xl" />
   </div>
 );
 
@@ -55,17 +59,24 @@ const SubmitButton = ({ loading, children, gradient }) => (
   <button
     type="submit"
     disabled={loading}
-    className={`w-full ${gradient} text-white py-4 rounded-2xl 
-                hover:scale-[1.02] shadow-lg font-medium 
-                transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
+    className={`group relative w-full ${gradient} text-white py-4 rounded-2xl 
+                hover:scale-[1.02] shadow-xl hover:shadow-2xl font-semibold text-sm tracking-wider uppercase
+                transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+                overflow-hidden`}
   >
+    {/* Animated background */}
+    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+    
     {loading ? (
-      <div className="flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center gap-2 relative z-10">
         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
         {children}...
       </div>
     ) : (
-      children
+      <span className="relative z-10 flex items-center justify-center gap-2">
+        {children}
+        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
+      </span>
     )}
   </button>
 );
@@ -200,61 +211,98 @@ const handlePatientRegister = async (e) => {
   const portals = [
     {
       title: "Admin Portal",
-      desc: "System administration and practitioner management.",
-      color: "from-green-700 to-green-900",
+      desc: "System administration and practitioner management with advanced analytics.",
+      color: "from-slate-800 via-gray-900 to-black",
+      hoverColor: "hover:from-slate-700 hover:via-gray-800 hover:to-slate-900",
       icon: <Shield size={24} />,
       endpoint: "admin",
+      bgGradient: "from-slate-900/10 to-gray-900/20",
+      accentColor: "bg-slate-500/20",
     },
     {
       title: "Doctor Portal",
-      desc: "Practice management and patient care tools.",
-      color: "from-emerald-600 to-green-500",
+      desc: "Advanced practice management with AI-powered patient insights and care tools.",
+      color: "from-emerald-600 via-teal-600 to-cyan-600",
+      hoverColor: "hover:from-emerald-500 hover:via-teal-500 hover:to-cyan-500",
       icon: <Stethoscope size={24} />,
       endpoint: "doctor",
+      bgGradient: "from-emerald-500/10 to-teal-500/20",
+      accentColor: "bg-emerald-500/20",
     },
     {
       title: "Patient Portal",
-      desc: "Personalized nutrition plans and health tracking.",
-      color: "from-green-600 to-lime-600",
+      desc: "Personalized wellness journey with real-time health monitoring and nutrition plans.",
+      color: "from-violet-600 via-purple-600 to-indigo-600",
+      hoverColor: "hover:from-violet-500 hover:via-purple-500 hover:to-indigo-500",
       icon: <Heart size={24} />,
       endpoint: "patient",
+      bgGradient: "from-violet-500/10 to-purple-500/20",
+      accentColor: "bg-violet-500/20",
     },
   ];
 
   return (
     <>
-   <div className="min-h-screen w-full bg-gradient-to-br from-amber-400 via-green-300 to-orange-400">
+   <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-white to-violet-50/30 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 -right-40 w-80 h-80 bg-gradient-to-br from-violet-400/20 to-purple-600/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-emerald-400/20 to-teal-600/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-pink-400/10 to-violet-600/10 rounded-full blur-3xl" />
+      </div>
+
       <Navbar />
       <Hero />
 
       {/* Portals Section */}
-     <section className="w-full py-16">
-    <div className="max-w-6xl mx-auto px-6">
-
-        <h2 className="text-3xl font-bold text-center text-green-800 mb-4">
-          Choose Your <span className="text-amber-700">Portal</span>
-        </h2>
-        <p className="text-center text-green-600 mb-12">Access your personalized Ayurvedic nutrition platform</p>
+     <section className="relative w-full py-24 bg-gradient-to-b from-white/80 to-slate-50/80 backdrop-blur-sm">
+    <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-20">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Sparkles className="text-violet-500" size={24} />
+            <span className="text-violet-600 font-semibold tracking-wider text-sm uppercase">Access Portals</span>
+            <Sparkles className="text-violet-500" size={24} />
+          </div>
+          <h2 className="text-5xl font-bold bg-gradient-to-r from-slate-800 via-violet-700 to-slate-800 bg-clip-text text-transparent mb-6">
+            Choose Your <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Portal</span>
+          </h2>
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">Experience next-generation Ayurvedic healthcare with intelligent insights, personalized care, and seamless digital integration</p>
+        </div>
         
-        <div className="mt-10 grid md:grid-cols-3 gap-8 px-6">
-          {portals.map((p) => (
+        <div className="grid lg:grid-cols-3 gap-10">
+          {portals.map((p, index) => (
             <div
               key={p.title}
-              className="bg-gradient-to-br from-amber-50 via-green-50 to-orange-50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-green-200/30"
+              className="group relative bg-white/70 backdrop-blur-lg rounded-3xl p-10 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-4 border border-white/50 overflow-hidden"
+              style={{ animationDelay: `${index * 150}ms` }}
             >
-              <div
-                className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 bg-gradient-to-br ${p.color} text-white shadow-lg`}
-              >
-                {p.icon}
+              {/* Animated background gradient */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${p.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+              
+              {/* Decorative elements */}
+              <div className={`absolute top-0 right-0 w-32 h-32 ${p.accentColor} rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-transform duration-700`} />
+              <div className={`absolute bottom-0 left-0 w-24 h-24 ${p.accentColor} rounded-full translate-y-12 -translate-x-12 group-hover:scale-125 transition-transform duration-700`} />
+              
+              {/* Content */}
+              <div className="relative z-10">
+                <div
+                  className={`w-20 h-20 rounded-3xl flex items-center justify-center mb-8 bg-gradient-to-br ${p.color} text-white shadow-2xl group-hover:shadow-3xl group-hover:scale-110 transition-all duration-300`}
+                >
+                  {p.icon}
+                </div>
+                <h3 className="text-2xl font-bold text-slate-800 mb-4 group-hover:text-slate-900">{p.title}</h3>
+                <p className="text-slate-600 mb-10 leading-relaxed group-hover:text-slate-700 transition-colors duration-300">{p.desc}</p>
+                <button
+                  onClick={() => setActiveModal(p.endpoint)}
+                  className={`relative w-full py-4 rounded-2xl text-white font-semibold bg-gradient-to-r ${p.color} ${p.hoverColor} shadow-lg hover:shadow-2xl transition-all duration-300 transform group-hover:scale-105 overflow-hidden group/btn`}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover/btn:translate-x-[200%] transition-transform duration-700" />
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    Access Portal
+                    <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
+                  </span>
+                </button>
               </div>
-              <h3 className="text-xl font-bold text-green-800 mb-2">{p.title}</h3>
-              <p className="text-sm text-green-600 mb-6">{p.desc}</p>
-              <button
-                onClick={() => setActiveModal(p.endpoint)}
-                className={`w-full py-3 rounded-2xl text-white font-semibold bg-gradient-to-r ${p.color} hover:shadow-lg transition-all`}
-              >
-                Access Portal
-              </button>
             </div>
           ))}
         </div>
@@ -262,28 +310,63 @@ const handlePatientRegister = async (e) => {
       </section>
 
       {/* Features Section */}
-       <section className="w-full py-16 ">
-    <div className="max-w-6xl mx-auto px-6 ">
-        <h2 className="text-3xl font-bold text-center text-green-800 mb-4">
-          Ancient Wisdom, <span className="text-amber-700">Modern Technology</span>
-        </h2>
-        <p className="text-center text-green-600 mb-12">Comprehensive Ayurvedic nutrition solutions</p>
+       <section className="relative w-full py-24 bg-gradient-to-b from-slate-50/80 to-white/80 backdrop-blur-sm">
+    <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-20">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+            <span className="text-emerald-600 font-semibold tracking-wider text-sm uppercase">Platform Features</span>
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+          </div>
+          <h2 className="text-5xl font-bold bg-gradient-to-r from-slate-800 via-emerald-700 to-slate-800 bg-clip-text text-transparent mb-6">
+            Ancient Wisdom, <span className="bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">Modern Technology</span>
+          </h2>
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">Revolutionary healthcare solutions combining traditional Ayurvedic principles with cutting-edge artificial intelligence and data analytics</p>
+        </div>
         
-        <div className="mt-10 grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {[
-            { title: "Dosha Analysis", icon: "🔥" },
-            { title: "Nutrition Planning", icon: "🍃" },
-            { title: "Progress Tracking", icon: "📈" },
-            { title: "Herbal Integration", icon: "🌿" },
-            { title: "Lifestyle Guidance", icon: "⚡" },
-            { title: "Health Monitoring", icon: "💊" },
-          ].map((f) => (
+            { title: "Dosha Analysis", icon: "🔥", color: "from-orange-500 via-red-500 to-pink-500", desc: "AI-powered constitutional assessment" },
+            { title: "Nutrition Planning", icon: "🍃", color: "from-emerald-500 via-green-500 to-teal-500", desc: "Personalized meal recommendations" },
+            { title: "Progress Tracking", icon: "📈", color: "from-blue-500 via-indigo-500 to-purple-500", desc: "Real-time health monitoring" },
+            { title: "Herbal Integration", icon: "🌿", color: "from-green-500 via-emerald-500 to-teal-600", desc: "Traditional remedy matching" },
+            { title: "Lifestyle Guidance", icon: "⚡", color: "from-purple-500 via-violet-500 to-pink-500", desc: "Holistic wellness coaching" },
+            { title: "Health Monitoring", icon: "💊", color: "from-cyan-500 via-blue-500 to-indigo-600", desc: "Continuous vitals tracking" },
+          ].map((f, index) => (
             <div
               key={f.title}
-              className="bg-gradient-to-br from-green-100 to-amber-50 rounded-2xl p-6 text-center shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1"
+              className="group relative bg-white/60 backdrop-blur-lg rounded-3xl p-8 text-center shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-white/40 overflow-hidden"
+              style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="text-3xl mb-3">{f.icon}</div>
-              <h4 className="font-semibold text-green-800">{f.title}</h4>
+              {/* Background glow effect */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${f.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-3xl`} />
+              
+              {/* Floating particles effect */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                {[...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className={`absolute w-1 h-1 bg-gradient-to-r ${f.color} rounded-full animate-bounce`}
+                    style={{
+                      left: `${20 + i * 30}%`,
+                      top: `${30 + i * 20}%`,
+                      animationDelay: `${i * 200}ms`,
+                      animationDuration: '2s'
+                    }}
+                  />
+                ))}
+              </div>
+              
+              <div className="relative z-10">
+                <div className={`w-20 h-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br ${f.color} flex items-center justify-center text-3xl shadow-2xl group-hover:shadow-3xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+                  {f.icon}
+                </div>
+                <h4 className="font-bold text-slate-800 text-xl mb-3 group-hover:text-slate-900 transition-colors duration-300">{f.title}</h4>
+                <p className="text-slate-600 text-sm group-hover:text-slate-700 transition-colors duration-300">{f.desc}</p>
+              </div>
+              
+              {/* Corner decorations */}
+              <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${f.color} opacity-10 rounded-full -translate-y-10 translate-x-10 group-hover:scale-150 transition-transform duration-700`} />
             </div>
           ))}
         </div>
@@ -292,46 +375,51 @@ const handlePatientRegister = async (e) => {
 
       {/* Modals */}
       {activeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 ">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
-            className="absolute inset-0 bg-slate-900/60"
+            className="absolute inset-0 bg-slate-900/70 backdrop-blur-lg"
             onClick={() => {
               setActiveModal(null);
               setError("");
               setSuccess("");
             }}
           />
-          <div className="relative bg-gradient-to-br from-green-50 to-amber-50 rounded-3xl p-8 max-w-lg w-full shadow-2xl z-10 max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-white/90 backdrop-blur-2xl rounded-3xl p-10 max-w-lg w-full shadow-2xl z-10 max-h-[90vh] overflow-y-auto border border-white/50">
+            {/* Decorative background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-purple-500/5 rounded-3xl" />
+            
             <button
               onClick={() => setActiveModal(null)}
-              className="absolute top-4 right-4 text-green-600 hover:text-amber-600"
+              className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 transition-colors duration-200 p-2 hover:bg-slate-100 rounded-full"
             >
-              <X size={20} />
+              <X size={24} />
             </button>
 
             {/* Error/Success messages */}
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
-                {error}
+              <div className="relative mb-6 p-5 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200/50 rounded-2xl text-red-700 text-sm shadow-lg backdrop-blur-sm">
+                <div className="absolute inset-0 bg-red-500/5 rounded-2xl" />
+                <span className="relative z-10">{error}</span>
               </div>
             )}
             {success && (
-              <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700">
-                {success}
+              <div className="relative mb-6 p-5 bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200/50 rounded-2xl text-emerald-700 text-sm shadow-lg backdrop-blur-sm">
+                <div className="absolute inset-0 bg-emerald-500/5 rounded-2xl" />
+                <span className="relative z-10">{success}</span>
               </div>
             )}
 
             {/* Admin Modal */}
             {activeModal === "admin" && (
-              <>
-                <div className="text-center mb-6">
-                  <div className="mx-auto w-16 h-16 rounded-3xl flex items-center justify-center bg-gradient-to-br from-green-700 to-green-900 text-white mb-3">
-                    <Shield />
+              <div className="relative z-10">
+                <div className="text-center mb-10">
+                  <div className="mx-auto w-24 h-24 rounded-3xl flex items-center justify-center bg-gradient-to-br from-slate-800 via-gray-900 to-black text-white mb-6 shadow-2xl">
+                    <Shield size={32} />
                   </div>
-                  <h3 className="text-2xl font-bold text-green-800">Admin Portal</h3>
-                  <p className="text-sm text-green-600">System administration access</p>
+                  <h3 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-gray-900 bg-clip-text text-transparent mb-3">Admin Portal</h3>
+                  <p className="text-slate-600 text-lg">System administration access</p>
                 </div>
-                <form onSubmit={handleAdminLogin} className="space-y-4">
+                <form onSubmit={handleAdminLogin} className="space-y-6">
                   <InputField
                     Icon={Mail}
                     type="email"
@@ -358,25 +446,25 @@ const handlePatientRegister = async (e) => {
                   />
                   <SubmitButton
                     loading={isLoading}
-                    gradient="bg-gradient-to-r from-green-700 to-green-900"
+                    gradient="bg-gradient-to-r from-slate-800 via-gray-900 to-black"
                   >
                     Access Dashboard
                   </SubmitButton>
                 </form>
-              </>
+              </div>
             )}
 
             {/* Doctor Modal */}
             {activeModal === "doctor" && (
-              <>
-                <div className="text-center mb-6  ">
-                  <div className="mx-auto w-16 h-16 rounded-3xl flex items-center justify-center bg-gradient-to-br from-emerald-600 to-green-500 text-white mb-3">
-                    <Stethoscope />
+              <div className="relative z-10">
+                <div className="text-center mb-10">
+                  <div className="mx-auto w-24 h-24 rounded-3xl flex items-center justify-center bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 text-white mb-6 shadow-2xl">
+                    <Stethoscope size={32} />
                   </div>
-                  <h3 className="text-2xl font-bold  text-green-800">Doctor Portal</h3>
-                  <p className="text-sm text-green-600">Practitioner login</p>
+                  <h3 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-3">Doctor Portal</h3>
+                  <p className="text-slate-600 text-lg">Practitioner login</p>
                 </div>
-                <form onSubmit={handleDoctorLogin} className="space-y-4">
+                <form onSubmit={handleDoctorLogin} className="space-y-6">
                   <InputField
                     Icon={Mail}
                     type="email"
@@ -403,33 +491,33 @@ const handlePatientRegister = async (e) => {
                   />
                   <SubmitButton
                     loading={isLoading}
-                    gradient="bg-gradient-to-r from-emerald-600 to-green-500"
+                    gradient="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600"
                   >
                     Access Practice Dashboard
                   </SubmitButton>
                 </form>
-              </>
+              </div>
             )}
 
             {/* Patient Modal */}
             {activeModal === "patient" && (
-              <>
-                <div className="text-center mb-6">
-                  <div className="mx-auto w-16 h-16 rounded-3xl flex items-center justify-center bg-gradient-to-br from-green-600 to-lime-600 text-white mb-3">
-                    <Heart />
+              <div className="relative z-10">
+                <div className="text-center mb-10">
+                  <div className="mx-auto w-24 h-24 rounded-3xl flex items-center justify-center bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 text-white mb-6 shadow-2xl">
+                    <Heart size={32} />
                   </div>
-                  <h3 className="text-2xl font-bold text-green-800">Patient Portal</h3>
-                  <p className="text-sm text-green-600">
+                  <h3 className="text-3xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mb-3">Patient Portal</h3>
+                  <p className="text-slate-600 text-lg">
                     {isPatientLogin ? "Sign in to your account" : "Create your wellness account"}
                   </p>
                 </div>
-                <div className="flex bg-green-200 rounded-2xl p-1.5 mb-6">
+                <div className="flex bg-gradient-to-r from-slate-100 to-violet-100/50 rounded-2xl p-2 mb-8 backdrop-blur-sm">
                   <button
                     type="button"
-                    className={`flex-1 py-2 rounded-xl font-medium ${
+                    className={`flex-1 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${
                       isPatientLogin
-                        ? "bg-white text-green-700 shadow-md"
-                        : "text-slate-600"
+                        ? "bg-white text-slate-700 shadow-lg scale-105"
+                        : "text-slate-500 hover:text-slate-600 hover:bg-white/50"
                     }`}
                     onClick={() => setIsPatientLogin(true)}
                   >
@@ -437,10 +525,10 @@ const handlePatientRegister = async (e) => {
                   </button>
                   <button
                     type="button"
-                    className={`flex-1 py-2 rounded-xl font-medium ${
+                    className={`flex-1 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${
                       !isPatientLogin
-                        ? "bg-white text-green-700 shadow-md"
-                        : "text-slate-600"
+                        ? "bg-white text-slate-700 shadow-lg scale-105"
+                        : "text-slate-500 hover:text-slate-600 hover:bg-white/50"
                     }`}
                     onClick={() => setIsPatientLogin(false)}
                   >
@@ -449,7 +537,7 @@ const handlePatientRegister = async (e) => {
                 </div>
                 <form
                   onSubmit={isPatientLogin ? handlePatientLogin : handlePatientRegister}
-                  className="space-y-4"
+                  className="space-y-6"
                 >
                   {!isPatientLogin && (
                     <InputField
@@ -499,12 +587,12 @@ const handlePatientRegister = async (e) => {
                   )}
                   <SubmitButton
                     loading={isLoading}
-                    gradient="bg-gradient-to-r from-green-600 to-lime-600"
+                    gradient="bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600"
                   >
                     {isPatientLogin ? "Sign In" : "Create Account"}
                   </SubmitButton>
                 </form>
-              </>
+              </div>
             )}
           </div>
         </div>

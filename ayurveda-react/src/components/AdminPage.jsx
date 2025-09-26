@@ -97,7 +97,7 @@ export default function AdminPage() {
           <div className="flex justify-between items-center">
             {/* Left side - Logo and Title */}
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-700 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-300 rounded-xl flex items-center justify-center shadow-lg">
                 <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
@@ -165,7 +165,7 @@ export default function AdminPage() {
           {/* Register Doctor Form */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-lg border border-green-200 overflow-hidden hover:shadow-xl transition-shadow duration-300">
-              <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-5">
+              <div className="bg-gradient-to-r from-emerald-500 to-emerald-300 px-6 py-5">
                 <h2 className="text-xl font-bold text-white flex items-center">
                   <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,14 +182,14 @@ export default function AdminPage() {
                 {(success || error) && (
                   <div className="mb-4">
                     {success && (
-                      <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-center justify-between">
+                      <div className=" from-emerald-500 to-emerald-300 px-4 py-3 rounded-lg flex items-center justify-between">
                         <div className="flex items-center">
                           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                           </svg>
                           {success}
                         </div>
-                        <button onClick={clearMessages} className="text-green-600 hover:text-green-800">
+                        <button onClick={clearMessages} className=" from-emerald-500 to-emerald-700 ">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
                           </svg>
@@ -238,7 +238,7 @@ export default function AdminPage() {
                     <input
                       type="email"
                       placeholder="Enter email address"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-colors duration-200"
                       value={form.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
                       required
@@ -279,7 +279,7 @@ export default function AdminPage() {
                   <button 
                     type="submit" 
                     disabled={submitLoading}
-                    className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:from-green-400 disabled:to-green-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
+                    className="w-full bg-gradient-to-r from-emerald-400 to-emerald-600 hover:from-green-700 hover:to-green-800 disabled:from-green-400 disabled:to-green-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
                   >
                     {submitLoading ? (
                       <>
@@ -306,7 +306,7 @@ export default function AdminPage() {
           {/* Doctors List */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-lg border border-green-200 overflow-hidden hover:shadow-xl transition-shadow duration-300">
-              <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-5 flex items-center justify-between">
+              <div className="bg-gradient-to-r from-emerald-400 to-emerald-400 px-6 py-5 flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-white flex items-center">
                     <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
@@ -336,7 +336,7 @@ export default function AdminPage() {
                 {loading ? (
                   <div className="flex items-center justify-center py-12">
                     <div className="text-center">
-                      <svg className="animate-spin h-8 w-8 text-green-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin h-8 w-8 text-emerald-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
@@ -358,7 +358,7 @@ export default function AdminPage() {
                         <div className="flex items-start justify-between">
                           <div className="flex items-center space-x-4">
                             {/* Doctor Number Badge */}
-                            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 group-hover:from-green-600 group-hover:to-green-700 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg transition-all duration-300">
+                            <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-400 group-hover:from-emerald-700 group-hover:to-emerald-700 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg transition-all duration-300">
                               <span className="text-white font-bold text-sm">#{index + 1}</span>
                             </div>
                             
