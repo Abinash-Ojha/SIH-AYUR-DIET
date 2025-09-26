@@ -34,10 +34,13 @@ public class SecurityConfig {
         return http.csrf(csrf->csrf.disable())
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/responses/getPlan/token/**").permitAll()
+                        .requestMatchers("/api/responses/getPlan/token/**").hasRole("PATIENT")
                         .requestMatchers("/auth/patient/**").permitAll()
-                        .requestMatchers("/admin/**").permitAll()
-                        .requestMatchers("/auth/**").permitAll() // allow register & login
+                        .requestMatchers("/admin/auth/**").permitAll()
+                        .requestMatchers("/auth/doctor/**").permitAll() // allow register & login
+                        .requestMatchers("/admin/registerDoctor").hasRole("ADMIN")
+                        .requestMatchers("/auth/patients/**").hasRole("DOCTOR")
+                        .requestMatchers("/api/responses/**").hasRole("DOCTOR")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -49,7 +52,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // 👇 Connect authentication to DoctorDetailsService
+    //  Connect authentication to AppUserDetailsService
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -62,7 +65,7 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-    // ✅ Define CORS config
+    // CORS config
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();

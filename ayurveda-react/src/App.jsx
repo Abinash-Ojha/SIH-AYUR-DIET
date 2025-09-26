@@ -10,6 +10,7 @@ import AboutPage from "./pages/AboutPage.jsx";
 import ServicesPage from "./pages/ServicePage.jsx";
 import WorkPage from "./pages/WorkPage.jsx";
 import ContactPage from "./pages/ContactPage.jsx";
+import ProtectedRoute from "./context/ProtectedRoute.jsx";
 
 function App() {
   return (
@@ -21,14 +22,43 @@ function App() {
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/works" element={<WorkPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/admin/dashboard" element={<AdminPage />} />
-          <Route path="/doctor/dashboard" element={<DoctorPage />} />
-          <Route path="/patient/dashboard" element={<PatientPage />} />
-          <Route path="/model-response" element={<ModelResponsePage />} />
+          {/* Protected routes */}
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <AdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/doctor/dashboard"
+            element={
+              <ProtectedRoute requiredRole="DOCTOR">
+                <DoctorPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/patient/dashboard"
+            element={
+              <ProtectedRoute requiredRole="PATIENT">
+                <PatientPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="/model-response" element={
+            <ProtectedRoute requiredRole="DOCTOR">
+              <ModelResponsePage />
+            </ProtectedRoute>
+          } 
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
   );
+      
 }
 
 export default App;

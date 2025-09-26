@@ -28,20 +28,20 @@ const InputField = ({
   rightElement,
 }) => (
   <div className="relative">
-    <Icon className="absolute left-4 top-4 text-slate-400" size={20} />
+    <Icon className="absolute left-4 top-4 text-green-500" size={20} />
     <input
       type={type}
       placeholder={placeholder}
       value={value}
       onChange={onChange}
       disabled={disabled}
-      className="w-full pl-14 pr-14 py-4 border border-slate-200 rounded-2xl focus:ring-2 focus:border-transparent transition-all bg-slate-50/50 font-light"
+      className="w-full pl-14 pr-14 py-4 border-2 border-green-200 rounded-2xl focus:ring-2 focus:ring-amber-300 focus:border-amber-500 transition-all bg-gradient-to-r from-green-50 to-amber-50 font-light"
     />
     {rightElement && (
       <button
         type="button"
         onClick={rightElement.onClick}
-        className="absolute right-4 top-4 text-slate-400 hover:text-slate-600"
+        className="absolute right-4 top-4 text-green-400 hover:text-amber-600"
         tabIndex={-1}
       >
         {rightElement.icon}
@@ -105,7 +105,7 @@ export default function HomePage() {
       });
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Network response was not ok");
+        throw new Error(errorData.message||"username or password is wrong");
       }
       const json = await response.json();
       setIsLoading(false);
@@ -119,72 +119,60 @@ export default function HomePage() {
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  /* --- Admin login handler --- */
-  const handleAdminLogin = async (e) => {
-    e.preventDefault();
-    setError("");
-    if (!validateEmail(adminData.email)) return setError("Invalid email.");
-    const res = await apiCall("/admin/auth/login", adminData);
-
-    if (res?.token) {
-      const userData = {
-        token: res.token,
-        role: (res.role || "ADMIN").toUpperCase(),
-        email: res.email || adminData.email,
-      };
-      localStorage.setItem("token", res?.token);
-      login(userData);
-
-      if (userData.role === "ADMIN") window.location.href = "/admin/dashboard";
-      else if (userData.role === "DOCTOR") window.location.href = "/doctor/dashboard";
-      else if (userData.role === "PATIENT") window.location.href = "/patient/dashboard";
-      else window.location.href = "/";
-    }
-  };
-
-  /* --- Doctor login handler --- */
-  const handleDoctorLogin = async (e) => {
-    e.preventDefault();
-    setError("");
-    if (!validateEmail(doctorData.email)) return setError("Invalid email.");
-    const res = await apiCall("/auth/doctor/login", doctorData);
-
-    if (res?.token) {
-      const userData = {
-        token: res.token,
-        role: (res.role || "DOCTOR").toUpperCase(),
-        email: res.email || doctorData.email,
-      };
-      localStorage.setItem("token", res?.token);
-      login(userData);
-      navigate("/doctor/dashboard");
-    }
-  };
-
-  /* --- Patient login handler --- */
-  const handlePatientLogin = async (e) => {
-    e.preventDefault();
-    setError("");
-    if (!validateEmail(patientData.email)) return setError("Invalid email.");
-    const res = await apiCall("/auth/patient/login", patientData);
-
-    if (res?.token) {
-      const userData = {
-        token: res.token,
-        role: (res.role || "PATIENT").toUpperCase(),
-        email: res.email || patientData.email,
-      };
-      localStorage.setItem("token", res?.token);
-      login(userData);
-      navigate("/patient/dashboard");
-    }
-  };
-
-  /* --- Patient registration handler --- */
-  const handlePatientRegister = async (e) => {
+ /* --- Admin login handler --- */
+const handleAdminLogin = async (e) => {
   e.preventDefault();
   setError("");
-  
+  if (!validateEmail(adminData.email)) return setError("Invalid email.");
+
+  const res = await apiCall("/admin/auth/login", adminData);
+
+  if (res?.token) {
+    // store full backend object
+    login(res);
+
+    // redirect to dashboard
+    window.location.href = "/admin/dashboard";
+  }
+};
+
+/* --- Doctor login handler --- */
+const handleDoctorLogin = async (e) => {
+  e.preventDefault();
+  setError("");
+  if (!validateEmail(doctorData.email)) return setError("Invalid email.");
+
+  const res = await apiCall("/auth/doctor/login", doctorData);
+
+  if (res?.token) {
+    // store full backend object
+    login(res);
+
+    window.location.href = "/doctor/dashboard";
+  }
+};
+
+/* --- Patient login handler --- */
+const handlePatientLogin = async (e) => {
+  e.preventDefault();
+  setError("");
+  if (!validateEmail(patientData.email)) return setError("Invalid email.");
+
+  const res = await apiCall("/auth/patient/login", patientData);
+
+  if (res?.token) {
+    // store full backend object
+    login(res);
+
+    window.location.href = "/patient/dashboard";
+  }
+};
+
+/* --- Patient registration handler --- */
+const handlePatientRegister = async (e) => {
+  e.preventDefault();
+  setError("");
+
   if (
     !patientData.fullName ||
     !patientData.email ||
@@ -195,16 +183,15 @@ export default function HomePage() {
     return setError("All fields required. Aadhar number must be 12 digits.");
   }
 
-  console.log(patientData);
   const res = await apiCall("/auth/patient/register", patientData);
 
-  // if backend returns only a message, not a token
   if (res?.token) {
-    localStorage.setItem("role", "PATIENT");
+    // store full backend object
+    login(res);
     window.location.href = "/patient/dashboard";
   } else {
-    alert(res?.message || "Patient registered successfully now you can login");
-    window.location.href = "/"; // redirect to login instead
+    alert(res?.message || "Patient registered successfully, now you can login");
+    window.location.href = "/";
   }
 };
 
@@ -213,94 +200,99 @@ export default function HomePage() {
   const portals = [
     {
       title: "Admin Portal",
-      desc: "Manage practitioners & system operations.",
+      desc: "System administration and practitioner management.",
       color: "from-green-700 to-green-900",
       icon: <Shield size={24} />,
       endpoint: "admin",
     },
     {
-      title: "Vaidya Login",
-      desc: "Practice tools & patient management.",
+      title: "Doctor Portal",
+      desc: "Practice management and patient care tools.",
       color: "from-emerald-600 to-green-500",
       icon: <Stethoscope size={24} />,
       endpoint: "doctor",
     },
     {
       title: "Patient Portal",
-      desc: "Personalized plans & progress tracking.",
-      color: "from-yellow-500 to-green-600",
-      icon: <User size={24} />,
+      desc: "Personalized nutrition plans and health tracking.",
+      color: "from-green-600 to-lime-600",
+      icon: <Heart size={24} />,
       endpoint: "patient",
     },
   ];
 
   return (
     <>
+   <div className="min-h-screen w-full bg-gradient-to-br from-amber-400 via-green-300 to-orange-400">
       <Navbar />
       <Hero />
 
       {/* Portals Section */}
-      <section className="max-w-6xl mx-auto py-16 bg-green-100 font-[Poppins]">
-        <h2 className="text-3xl font-bold text-center text-green-800">
-          Choose Your <span className="text-green-800">Portal</span>
+     <section className="w-full py-16">
+    <div className="max-w-6xl mx-auto px-6">
+
+        <h2 className="text-3xl font-bold text-center text-green-800 mb-4">
+          Choose Your <span className="text-amber-700">Portal</span>
         </h2>
-        <div className="mt-10 grid md:grid-cols-3 gap-8">
+        <p className="text-center text-green-600 mb-12">Access your personalized Ayurvedic nutrition platform</p>
+        
+        <div className="mt-10 grid md:grid-cols-3 gap-8 px-6">
           {portals.map((p) => (
             <div
               key={p.title}
-              className="bg-green-200 rounded-2xl p-8 shadow-md hover:shadow-xl transition"
+              className="bg-gradient-to-br from-amber-50 via-green-50 to-orange-50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-green-200/30"
             >
               <div
-                className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 bg-green-700 text-white`}
+                className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 bg-gradient-to-br ${p.color} text-white shadow-lg`}
               >
                 {p.icon}
               </div>
-              <h3 className="text-xl font-bold">{p.title}</h3>
-              <p className="text-sm text-slate-600 mt-2">{p.desc}</p>
+              <h3 className="text-xl font-bold text-green-800 mb-2">{p.title}</h3>
+              <p className="text-sm text-green-600 mb-6">{p.desc}</p>
               <button
                 onClick={() => setActiveModal(p.endpoint)}
-                className={`mt-6 w-full py-3 rounded-2xl text-white font-semibold bg-green-700`}
+                className={`w-full py-3 rounded-2xl text-white font-semibold bg-gradient-to-r ${p.color} hover:shadow-lg transition-all`}
               >
-                {p.title.includes("Admin")
-                  ? "Secure Access"
-                  : p.title.includes("Vaidya")
-                  ? "Practice Dashboard"
-                  : "Start Healing"}
+                Access Portal
               </button>
             </div>
           ))}
         </div>
+        </div>
       </section>
 
       {/* Features Section */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
-        <h2 className="text-3xl font-bold text-center text-gray-800">
-          Ancient Science,{" "}
-          <span className="text-green-900">Modern Precision</span>
+       <section className="w-full py-16 ">
+    <div className="max-w-6xl mx-auto px-6 ">
+        <h2 className="text-3xl font-bold text-center text-green-800 mb-4">
+          Ancient Wisdom, <span className="text-amber-700">Modern Technology</span>
         </h2>
+        <p className="text-center text-green-600 mb-12">Comprehensive Ayurvedic nutrition solutions</p>
+        
         <div className="mt-10 grid sm:grid-cols-2 md:grid-cols-3 gap-6">
           {[
-            { title: "Pitta Balance", icon: "🔥" },
-            { title: "Kapha Harmony", icon: "💧" },
-            { title: "Vata Stability", icon: "🌬️" },
-            { title: "Herb Integration", icon: "🍃" },
-            { title: "Agni Optimization", icon: "⚡" },
+            { title: "Dosha Analysis", icon: "🔥" },
+            { title: "Nutrition Planning", icon: "🍃" },
             { title: "Progress Tracking", icon: "📈" },
+            { title: "Herbal Integration", icon: "🌿" },
+            { title: "Lifestyle Guidance", icon: "⚡" },
+            { title: "Health Monitoring", icon: "💊" },
           ].map((f) => (
             <div
               key={f.title}
-              className="bg-green-200 rounded-2xl p-6 text-center shadow-lg hover:shadow-md transition"
+              className="bg-gradient-to-br from-green-100 to-amber-50 rounded-2xl p-6 text-center shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1"
             >
               <div className="text-3xl mb-3">{f.icon}</div>
-              <h4 className="font-semibold">{f.title}</h4>
+              <h4 className="font-semibold text-green-800">{f.title}</h4>
             </div>
           ))}
+        </div>
         </div>
       </section>
 
       {/* Modals */}
       {activeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 ">
           <div
             className="absolute inset-0 bg-slate-900/60"
             onClick={() => {
@@ -309,10 +301,10 @@ export default function HomePage() {
               setSuccess("");
             }}
           />
-          <div className="relative bg-green-100 rounded-3xl p-8 max-w-lg w-full shadow-2xl z-10 max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-gradient-to-br from-green-50 to-amber-50 rounded-3xl p-8 max-w-lg w-full shadow-2xl z-10 max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setActiveModal(null)}
-              className="absolute top-4 right-4 text-black hover:text-black"
+              className="absolute top-4 right-4 text-green-600 hover:text-amber-600"
             >
               <X size={20} />
             </button>
@@ -329,17 +321,15 @@ export default function HomePage() {
               </div>
             )}
 
-            {/* Modals for Admin, Doctor, Patient */}
+            {/* Admin Modal */}
             {activeModal === "admin" && (
               <>
                 <div className="text-center mb-6">
                   <div className="mx-auto w-16 h-16 rounded-3xl flex items-center justify-center bg-gradient-to-br from-green-700 to-green-900 text-white mb-3">
                     <Shield />
                   </div>
-                  <h3 className="text-2xl font-bold">Admin Portal</h3>
-                  <p className="text-sm text-slate-600">
-                    Secure system administration
-                  </p>
+                  <h3 className="text-2xl font-bold text-green-800">Admin Portal</h3>
+                  <p className="text-sm text-green-600">System administration access</p>
                 </div>
                 <form onSubmit={handleAdminLogin} className="space-y-4">
                   <InputField
@@ -363,11 +353,7 @@ export default function HomePage() {
                     disabled={isLoading}
                     rightElement={{
                       onClick: () => setShowPassword(!showPassword),
-                      icon: showPassword ? (
-                        <EyeOff size={18} />
-                      ) : (
-                        <Eye size={18} />
-                      ),
+                      icon: showPassword ? <EyeOff size={18} /> : <Eye size={18} />,
                     }}
                   />
                   <SubmitButton
@@ -380,20 +366,21 @@ export default function HomePage() {
               </>
             )}
 
+            {/* Doctor Modal */}
             {activeModal === "doctor" && (
               <>
-                <div className="text-center mb-6">
+                <div className="text-center mb-6  ">
                   <div className="mx-auto w-16 h-16 rounded-3xl flex items-center justify-center bg-gradient-to-br from-emerald-600 to-green-500 text-white mb-3">
                     <Stethoscope />
                   </div>
-                  <h3 className="text-2xl font-bold">Vaidya Portal</h3>
-                  <p className="text-sm text-slate-600">Practitioner login</p>
+                  <h3 className="text-2xl font-bold  text-green-800">Doctor Portal</h3>
+                  <p className="text-sm text-green-600">Practitioner login</p>
                 </div>
                 <form onSubmit={handleDoctorLogin} className="space-y-4">
                   <InputField
                     Icon={Mail}
                     type="email"
-                    placeholder="Practitioner Email"
+                    placeholder="Doctor Email"
                     value={doctorData.email}
                     onChange={(e) =>
                       setDoctorData({ ...doctorData, email: e.target.value })
@@ -406,19 +393,12 @@ export default function HomePage() {
                     placeholder="Password"
                     value={doctorData.password}
                     onChange={(e) =>
-                      setDoctorData({
-                        ...doctorData,
-                        password: e.target.value,
-                      })
+                      setDoctorData({ ...doctorData, password: e.target.value })
                     }
                     disabled={isLoading}
                     rightElement={{
                       onClick: () => setShowPassword(!showPassword),
-                      icon: showPassword ? (
-                        <EyeOff size={18} />
-                      ) : (
-                        <Eye size={18} />
-                      ),
+                      icon: showPassword ? <EyeOff size={18} /> : <Eye size={18} />,
                     }}
                   />
                   <SubmitButton
@@ -431,17 +411,16 @@ export default function HomePage() {
               </>
             )}
 
+            {/* Patient Modal */}
             {activeModal === "patient" && (
               <>
                 <div className="text-center mb-6">
-                  <div className="mx-auto w-16 h-16 rounded-3xl flex items-center justify-center bg-gradient-to-br from-green-400 to-green-500 text-white mb-3">
+                  <div className="mx-auto w-16 h-16 rounded-3xl flex items-center justify-center bg-gradient-to-br from-green-600 to-lime-600 text-white mb-3">
                     <Heart />
                   </div>
-                  <h3 className="text-2xl font-bold">Wellness Portal</h3>
-                  <p className="text-sm text-slate-600">
-                    {isPatientLogin
-                      ? "Sign in to your account"
-                      : "Create your wellness account"}
+                  <h3 className="text-2xl font-bold text-green-800">Patient Portal</h3>
+                  <p className="text-sm text-green-600">
+                    {isPatientLogin ? "Sign in to your account" : "Create your wellness account"}
                   </p>
                 </div>
                 <div className="flex bg-green-200 rounded-2xl p-1.5 mb-6">
@@ -465,13 +444,11 @@ export default function HomePage() {
                     }`}
                     onClick={() => setIsPatientLogin(false)}
                   >
-                    Join Us
+                    Register
                   </button>
                 </div>
                 <form
-                  onSubmit={
-                    isPatientLogin ? handlePatientLogin : handlePatientRegister
-                  }
+                  onSubmit={isPatientLogin ? handlePatientLogin : handlePatientRegister}
                   className="space-y-4"
                 >
                   {!isPatientLogin && (
@@ -480,10 +457,7 @@ export default function HomePage() {
                       placeholder="Full Name"
                       value={patientData.fullName}
                       onChange={(e) =>
-                        setPatientData({
-                          ...patientData,
-                          fullName: e.target.value,
-                        })
+                        setPatientData({ ...patientData, fullName: e.target.value })
                       }
                       disabled={isLoading}
                     />
@@ -494,10 +468,7 @@ export default function HomePage() {
                     placeholder="Email Address"
                     value={patientData.email}
                     onChange={(e) =>
-                      setPatientData({
-                        ...patientData,
-                        email: e.target.value,
-                      })
+                      setPatientData({ ...patientData, email: e.target.value })
                     }
                     disabled={isLoading}
                   />
@@ -507,41 +478,28 @@ export default function HomePage() {
                     placeholder="Password"
                     value={patientData.password}
                     onChange={(e) =>
-                      setPatientData({
-                        ...patientData,
-                        password: e.target.value,
-                      })
+                      setPatientData({ ...patientData, password: e.target.value })
                     }
                     disabled={isLoading}
                     rightElement={{
                       onClick: () => setShowPassword(!showPassword),
-                      icon: showPassword ? (
-                        <EyeOff size={18} />
-                      ) : (
-                        <Eye size={18} />
-                      ),
+                      icon: showPassword ? <EyeOff size={18} /> : <Eye size={18} />,
                     }}
                   />
                   {!isPatientLogin && (
-                    <>
-                      <InputField
-                        Icon={CreditCard}
-                        placeholder="Aadhar Number (12 digits)"
-                        value={patientData.aadharNumber}
-                        onChange={(e) =>
-                          setPatientData({
-                            ...patientData,
-                           
-                            aadharNumber: e.target.value,
-                          })
-                        }
-                        disabled={isLoading}
-                      />
-                    </>
+                    <InputField
+                      Icon={CreditCard}
+                      placeholder="Aadhar Number (12 digits)"
+                      value={patientData.aadharNumber}
+                      onChange={(e) =>
+                        setPatientData({ ...patientData, aadharNumber: e.target.value })
+                      }
+                      disabled={isLoading}
+                    />
                   )}
                   <SubmitButton
                     loading={isLoading}
-                    gradient="bg-gradient-to-r from-green-600 to-green-700"
+                    gradient="bg-gradient-to-r from-green-600 to-lime-600"
                   >
                     {isPatientLogin ? "Sign In" : "Create Account"}
                   </SubmitButton>
@@ -552,8 +510,8 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Footer */}
       <Footer />
+      </div>
     </>
   );
 }

@@ -61,46 +61,34 @@ const ModelResponsePage = () => {
 
   const API_BASE_URL = 'http://localhost:8080/api/responses';
 
-  // Get JWT token from localStorage or context
-  const getAuthToken = () => {
-    const token = localStorage.getItem('authToken') || 
-                  localStorage.getItem('token') || 
-                  sessionStorage.getItem('authToken') ||
-                  localStorage.getItem('jwtToken') ||
-                  sessionStorage.getItem('token');
-    
-    console.log('Retrieved token:', token ? 'Token found' : 'No token found');
-    return token;
-  };
+  
+  // Get JWT token from stored user object
+const getAuthToken = () => {
+  const storedUser =
+    localStorage.getItem('user') ||  // <-- your key
+    localStorage.getItem('authToken') ||
+    localStorage.getItem('token') ||
+    localStorage.getItem('jwtToken') ||
+    sessionStorage.getItem('authToken') ||
+    sessionStorage.getItem('token');
 
-  // Validate token format
-  const validateToken = (token) => {
-    if (!token) return false;
-    
-    // JWT should have 3 parts separated by dots
-    const parts = token.split('.');
-    if (parts.length !== 3) {
-      console.error('Invalid JWT format - should have 3 parts');
-      return false;
-    }
-    
-    try {
-      // Try to decode the payload (without verification)
-      const payload = JSON.parse(atob(parts[1]));
-      console.log('Token payload:', payload);
-      
-      // Check if token is expired
-      if (payload.exp && payload.exp < Date.now() / 1000) {
-        console.error('Token is expired');
-        return false;
-      }
-      
-      return true;
-    } catch (e) {
-      console.error('Error decoding token:', e);
-      return false;
-    }
-  };
+  if (!storedUser) {
+    console.log('No token found');
+    return null;
+  }
+
+  try {
+    const userObj = JSON.parse(storedUser);
+    const token = userObj.token || null;
+    console.log('Retrieved token:', token ? 'Token found' : 'No token in object');
+    return token;
+  } catch (err) {
+    // Already a raw token string
+    console.log('Retrieved token (raw):', storedUser);
+    return storedUser;
+  }
+};
+
 
   // Clear invalid tokens
   const clearTokens = () => {
@@ -118,12 +106,6 @@ const ModelResponsePage = () => {
     if (!token) {
       throw new Error('No authentication token found. Please login again.');
     }
-    
-    if (!validateToken(token)) {
-      clearTokens();
-      throw new Error('Invalid or expired token. Please login again.');
-    }
-    
     return {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
@@ -1289,8 +1271,8 @@ const ModelResponsePage = () => {
               </button>
             </div>
             <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-900">Model Response Center</h1>
-              <p className="text-sm text-gray-600">Advanced Health Analytics Dashboard</p>
+              <h1 className="text-2xl font-bold text-gray-900  " >Ayurvedic Diet Plan Generation Dashboard</h1>
+              <p className="text-sm text-gray-600">Advanced Dosha Analytics and Diet plan </p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">

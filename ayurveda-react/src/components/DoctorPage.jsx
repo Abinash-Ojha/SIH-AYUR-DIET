@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import {
   Eye,
   EyeOff,
@@ -22,12 +23,20 @@ import {
   LogOut,
   UserPlus,
   Database,
+  Stethoscope,
+  Bell,
+  Home,
+  FileText,
+  BarChart3,
+  Menu
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import AccessDenied from "./AccessDenied";
 
 const DoctorPage = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const { user } = useAuth();
   const [patients, setPatients] = useState([]);
   const [searchedPatient, setSearchedPatient] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -211,7 +220,7 @@ const DoctorPage = () => {
   };
 
   useEffect(() => {
-    if (activeTab === "patients") fetchPatients();
+    if (activeTab === "patients" || activeTab === "dashboard") fetchPatients();
   }, [activeTab]);
 
   const toggleSection = (sectionKey) => {
@@ -423,59 +432,99 @@ const DoctorPage = () => {
   };
 
   const tabConfig = [
-     { id: "patients", label: "All Patients", icon: Users, color: "orange" },
-    { id: "dashboard", label: "Dashboard", icon: Settings, color: "blue" },
+    { id: "dashboard", label: "Dashboard", icon: Home, color: "blue" },
+    { id: "patients", label: "All Patients", icon: Users, color: "orange" },
     { id: "search", label: "Search Patient", icon: Search, color: "green" },
-    { id: "add-patient", label: "Add Patient", icon: UserPlus, color: "purple" }
-   
+    { id: "add-patient", label: "Add Patient", icon: UserPlus, color: "purple" },
+     { id: "changePassword", label: "Change Password", icon: Shield, color: "purple" }
   ];
 
+  const getCurrentTime = () => {
+    const now = new Date();
+    const hour = now.getHours();
+    if (hour < 12) return "Good Morning";
+    if (hour < 17) return "Good Afternoon";
+    return "Good Evening";
+  };
+
+  console.log("User object:", user);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
-      {/* Modern Header */}
-      <header className="bg-white/80 backdrop-blur-sm shadow-lg border-b border-gray-200 sticky top-0 z-50">
-        <div className="px-6 py-4">
-          <div className="flex justify-between items-center">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Professional Header */}
+      <header className="bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/80 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo and Brand */}
             <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
-                <Heart className="text-white" size={20} />
+              <div className="relative">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Stethoscope className="text-white" size={24} />
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-900 bg-clip-text text-transparent">
                   Doctor Dashboard
                 </h1>
-                <p className="text-sm text-gray-500">Patient Management System</p>
+                <p className="text-sm text-gray-500 font-medium">Patient Management Portal</p>
               </div>
             </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg"
-            >
-              <LogOut size={18} />
-              <span>Logout</span>
-            </button>
+
+            {/* Professional Welcome Section */}
+            <div className="flex items-center space-x-6">
+              {/* Notifications */}
+              <button className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                <Bell size={20} />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
+              </button>
+
+              {/* Doctor Welcome Card */}
+              <div className="flex items-center space-x-4 bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-3 rounded-xl border border-blue-200/50 shadow-sm">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-md">
+                  <User className="text-white" size={18} />
+                </div>
+                <div className="text-left">
+                  <div className="text-sm text-gray-600 font-medium">
+                    {getCurrentTime()},
+                  </div>
+                  <div className="text-lg font-bold text-gray-900">
+                    Dr. {user?.name || "Doctor"}
+                  </div>
+                </div>
+              </div>
+
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
+              >
+                <LogOut size={18} />
+                <span>Logout</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Enhanced Navigation Tabs */}
-      <nav className="bg-white/60 backdrop-blur-sm border-b border-gray-200">
-        <div className="px-6">
-          <div className="flex space-x-1">
+      {/* Professional Navigation */}
+      <nav className="bg-white/80 backdrop-blur-sm border-b border-gray-200/60 sticky top-[88px] z-40">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex space-x-1 overflow-x-auto">
             {tabConfig.map(({ id, label, icon: Icon, color }) => (
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                className={`relative px-6 py-4 flex items-center space-x-3 font-medium transition-all duration-200 ${
+                className={`relative px-6 py-4 flex items-center space-x-3 font-semibold text-sm transition-all duration-300 whitespace-nowrap ${
                   activeTab === id
-                    ? `text-${color}-600 bg-${color}-50 border-b-2 border-${color}-500`
-                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                    ? `text-${color}-700 bg-${color}-50/80 border-b-3 border-${color}-500 shadow-sm`
+                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-50/80"
                 }`}
               >
-                <Icon size={18} />
+                <Icon size={18} className={activeTab === id ? `text-${color}-600` : 'text-gray-500'} />
                 <span>{label}</span>
                 {activeTab === id && (
-                  <div className={`absolute inset-0 bg-${color}-500/5 rounded-t-lg`} />
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/20 rounded-t-lg pointer-events-none" />
                 )}
               </button>
             ))}
@@ -485,91 +534,260 @@ const DoctorPage = () => {
 
       {/* Enhanced Messages */}
       {message.text && (
-        <div className="mx-6 mt-6 animate-in slide-in-from-top-2 duration-300">
-          <div
-            className={`p-4 rounded-xl shadow-lg border-l-4 ${
-              message.type === "success"
-                ? "bg-green-50 text-green-800 border-green-500"
-                : "bg-red-50 text-red-800 border-red-500"
-            }`}
-          >
-            <div className="flex items-center space-x-2">
-              {message.type === "success" ? (
-                <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+        <div className="max-w-7xl mx-auto px-6 mt-6">
+          <div className="animate-in slide-in-from-top-2 duration-300">
+            <div
+              className={`p-4 rounded-xl shadow-lg border-l-4 backdrop-blur-sm ${
+                message.type === "success"
+                  ? "bg-green-50/90 text-green-800 border-green-500"
+                  : "bg-red-50/90 text-red-800 border-red-500"
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                  message.type === "success" ? "bg-green-500" : "bg-red-500"
+                }`}>
                   <div className="w-2 h-2 bg-white rounded-full" />
                 </div>
-              ) : (
-                <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                  <div className="w-2 h-2 bg-white rounded-full" />
-                </div>
-              )}
-              <span className="font-medium">{message.text}</span>
+                <span className="font-semibold">{message.text}</span>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      <main className="px-6 py-8">
-        {/* Enhanced Dashboard */}
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Professional Dashboard */}
         {activeTab === "dashboard" && (
-          <div className="max-w-lg mx-auto">
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
-                <div className="flex items-center space-x-3 text-white">
-                  <Shield size={24} />
-                  <h2 className="text-xl font-semibold">Security Settings</h2>
+          <div className="space-y-8">
+            {/* Welcome Banner */}
+            <div className="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 rounded-2xl p-8 text-white shadow-xl">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <h2 className="text-3xl font-bold">
+                    Welcome back, Dr. {user?.name || "Doctor"}!
+                  </h2>
+                  <p className="text-blue-100 text-lg">
+                    {getCurrentTime()}! Ready to help your patients today?
+                  </p>
+                  <div className="flex items-center space-x-4 mt-4">
+                    <div className="flex items-center space-x-2 bg-white/20 px-4 py-2 rounded-lg">
+                      <Calendar className="text-blue-200" size={18} />
+                      <span className="text-blue-100">{new Date().toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}</span>
+                    </div>
+                    <div className="flex items-center space-x-2 bg-white/20 px-4 py-2 rounded-lg">
+                      <Clock className="text-blue-200" size={18} />
+                      <span className="text-blue-100">{new Date().toLocaleTimeString('en-US', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                      })}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="hidden md:block">
+                  <div className="w-32 h-32 bg-white/10 rounded-full flex items-center justify-center">
+                    <Stethoscope size={64} className="text-white/80" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total Patients</p>
+                    <p className="text-3xl font-bold text-gray-900">{patients.length}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <Users className="text-blue-600" size={24} />
+                  </div>
                 </div>
               </div>
               
-              <form onSubmit={handleChangePassword} className="p-6 space-y-6">
-                {["oldPassword", "newPassword"].map((key, index) => (
-                  <div key={key} className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      {key === "oldPassword" ? "Current Password" : "New Password"}
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showPassword[key === "oldPassword" ? "old" : "new"] ? "text" : "password"}
-                        value={passwordForm[key]}
-                        onChange={(e) =>
-                          setPasswordForm((prev) => ({
-                            ...prev,
-                            [key]: e.target.value,
-                          }))
-                        }
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors pr-12"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowPassword((prev) => ({
-                            ...prev,
-                            [key === "oldPassword" ? "old" : "new"]: !prev[key === "oldPassword" ? "old" : "new"],
-                          }))
-                        }
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      >
-                        {showPassword[key === "oldPassword" ? "old" : "new"] ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
+              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Today's Appointments</p>
+                    <p className="text-3xl font-bold text-gray-900">{patients.length}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <Calendar className="text-green-600" size={24} />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Pending Reviews</p>
+                    <p className="text-3xl font-bold text-gray-900">12</p>
+                  </div>
+                  <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                    <FileText className="text-orange-600" size={24} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Top 5 Recent Patients */}
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+              <div className="bg-gradient-to-r from-indigo-600 to-blue-600 px-8 py-6">
+                <div className="flex items-center justify-between text-white">
+                  <div className="flex items-center space-x-3">
+                    <Users size={28} />
+                    <div>
+                      <h3 className="text-2xl font-bold">Recent Patients</h3>
+                      <p className="text-indigo-100">Top 5 recently added patients</p>
                     </div>
                   </div>
-                ))}
-                
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? (
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>Updating...</span>
+                  <button
+                    onClick={() => setActiveTab("patients")}
+                    className="px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors font-medium"
+                  >
+                    View All
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-8">
+                {patients.length > 0 ? (
+                  <div className="space-y-4">
+                    {patients.slice(0, 5).map((patient, index) => (
+                      <div
+                        key={patient.id}
+                        className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-200 hover:shadow-md transition-all duration-200"
+                      >
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-xl flex items-center justify-center text-white font-bold shadow-md">
+                            {patient.fullName?.charAt(0)?.toUpperCase() || patient.id?.toString().slice(-2) || "P"}
+                          </div>
+                          <div>
+                            <div className="text-lg font-bold text-gray-900">
+                              {patient.fullName || "N/A"}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              ID: #{patient.id} • {patient.age ? `${patient.age} years` : "Age N/A"} • {patient.gender || "Gender N/A"}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <div className="text-right">
+                            <div className="text-sm font-medium text-gray-900">
+                              {patient.email || "No email"}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              Patient #{index + 1}
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => navigate("/model-response")}
+                            className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-sm font-semibold rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                          >
+                            <BarChart3 size={16} className="mr-2 inline" />
+                            Analyze
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center shadow-lg mx-auto mb-4">
+                      <Users size={40} className="text-gray-400" />
                     </div>
-                  ) : (
-                    "Update Password"
-                  )}
-                </button>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">No patients yet</h3>
+                    <p className="text-gray-500 mb-6">
+                      Start by adding your first patient to see them here.
+                    </p>
+                    <button
+                      onClick={() => setActiveTab("add-patient")}
+                      className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg font-semibold"
+                    >
+                      <UserPlus size={18} className="mr-2" />
+                      Add First Patient
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Change Password Tab */}
+        {activeTab === "changePassword" && (
+          <div className="space-y-8">
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-4">
+                <div className="flex items-center space-x-3 text-white">
+                  <Shield size={28} />
+                  <div>
+                    <h3 className="text-2xl font-bold">Security Settings</h3>
+                    <p className="text-blue-100">Manage your account security</p>
+                  </div>
+                </div>
+              </div>
+
+              <form onSubmit={handleChangePassword} className="p-8">
+                <div className="max-w-2xl space-y-6">
+                  {["oldPassword", "newPassword"].map((key) => (
+                    <div key={key} className="space-y-3">
+                      <label className="block text-sm font-semibold text-gray-700">
+                        {key === "oldPassword" ? "Current Password" : "New Password"}
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPassword[key === "oldPassword" ? "old" : "new"] ? "text" : "password"}
+                          value={passwordForm[key]}
+                          onChange={(e) =>
+                            setPasswordForm((prev) => ({
+                              ...prev,
+                              [key]: e.target.value,
+                            }))
+                          }
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors pr-12 bg-gray-50/50"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowPassword((prev) => ({
+                              ...prev,
+                              [key === "oldPassword" ? "old" : "new"]: !prev[key === "oldPassword" ? "old" : "new"],
+                            }))
+                          }
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        >
+                          {showPassword[key === "oldPassword" ? "old" : "new"] ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Updating Password...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center space-x-2">
+                        <Shield size={20} />
+                        <span>Update Password</span>
+                      </div>
+                    )}
+                  </button>
+                </div>
               </form>
             </div>
           </div>
@@ -577,20 +795,23 @@ const DoctorPage = () => {
 
         {/* Enhanced Search Patient */}
         {activeTab === "search" && (
-          <div className="max-w-4xl mx-auto">
+          <div className="space-y-8">
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-4">
+              <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-8 py-6">
                 <div className="flex items-center space-x-3 text-white">
-                  <Search size={24} />
-                  <h2 className="text-xl font-semibold">Patient Search</h2>
+                  <Search size={28} />
+                  <div>
+                    <h2 className="text-2xl font-bold">Patient Search</h2>
+                    <p className="text-green-100">Find patients using Aadhar or Patient ID</p>
+                  </div>
                 </div>
               </div>
 
-              <div className="p-6 space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
+              <div className="p-8 space-y-8">
+                <div className="grid md:grid-cols-2 gap-8">
                   <form onSubmit={handleSearchByAadhar} className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-semibold text-gray-700 mb-3">
                         Search by Aadhar Number
                       </label>
                       <div className="flex space-x-3">
@@ -599,11 +820,11 @@ const DoctorPage = () => {
                           placeholder="Enter 12-digit Aadhar number"
                           value={aadharSearch}
                           onChange={(e) => setAadharSearch(e.target.value)}
-                          className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                          className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50/50"
                         />
                         <button
                           type="submit"
-                          className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                          className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg font-semibold"
                         >
                           Search
                         </button>
@@ -613,7 +834,7 @@ const DoctorPage = () => {
 
                   <form onSubmit={handleSearchById} className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-semibold text-gray-700 mb-3">
                         Search by Patient ID
                       </label>
                       <div className="flex space-x-3">
@@ -622,11 +843,11 @@ const DoctorPage = () => {
                           placeholder="Enter Patient ID"
                           value={patientIdSearch}
                           onChange={(e) => setPatientIdSearch(e.target.value)}
-                          className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                          className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-gray-50/50"
                         />
                         <button
                           type="submit"
-                          className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                          className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg font-semibold"
                         >
                           Search
                         </button>
@@ -636,13 +857,13 @@ const DoctorPage = () => {
                 </div>
 
                 {searchedPatient && (
-                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-                      <User size={20} />
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-8 border border-gray-200">
+                    <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-3">
+                      <User size={24} />
                       <span>Patient Details</span>
                     </h3>
-                    <div className="bg-white rounded-lg p-4 border">
-                      <pre className="text-sm text-gray-600 whitespace-pre-wrap overflow-x-auto">
+                    <div className="bg-white rounded-xl p-6 border shadow-sm">
+                      <pre className="text-sm text-gray-600 whitespace-pre-wrap overflow-x-auto font-mono">
                         {JSON.stringify(searchedPatient, null, 2)}
                       </pre>
                     </div>
@@ -655,19 +876,19 @@ const DoctorPage = () => {
 
         {/* Enhanced Add Patient Form */}
         {activeTab === "add-patient" && (
-          <div className="max-w-7xl mx-auto">
+          <div className="space-y-8">
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-purple-600 to-violet-600 px-6 py-4">
+              <div className="bg-gradient-to-r from-purple-600 to-violet-600 px-8 py-6">
                 <div className="flex items-center space-x-3 text-white">
-                  <UserPlus size={24} />
+                  <UserPlus size={28} />
                   <div>
-                    <h2 className="text-xl font-semibold">Add New Patient</h2>
-                    <p className="text-purple-100 text-sm">Complete patient registration form</p>
+                    <h2 className="text-2xl font-bold">Add New Patient</h2>
+                    <p className="text-purple-100">Complete patient registration form</p>
                   </div>
                 </div>
               </div>
 
-              <form onSubmit={handleAddPatient} className="p-6">
+              <form onSubmit={handleAddPatient} className="p-8">
                 <div className="space-y-6">
                   {formSections.map(renderFormSection)}
                 </div>
@@ -698,37 +919,37 @@ const DoctorPage = () => {
 
         {/* Enhanced Patients Table */}
         {activeTab === "patients" && (
-          <div className="max-w-7xl mx-auto">
+          <div className="space-y-8">
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-orange-600 to-red-600 px-6 py-4">
+              <div className="bg-gradient-to-r from-orange-600 to-red-600 px-8 py-6">
                 <div className="flex items-center justify-between text-white">
                   <div className="flex items-center space-x-3">
-                    <Database size={24} />
+                    <Database size={28} />
                     <div>
-                      <h2 className="text-xl font-semibold">Patient Database</h2>
-                      <p className="text-orange-100 text-sm">{patients.length} patients registered</p>
+                      <h2 className="text-2xl font-bold">Patient Database</h2>
+                      <p className="text-orange-100">{patients.length} patients registered in the system</p>
                     </div>
                   </div>
                   {loading && (
-                    <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   )}
                 </div>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                     <tr>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 uppercase tracking-wider">
-                        Patient ID
+                      <th className="px-8 py-5 text-left text-sm font-bold text-gray-900 uppercase tracking-wider">
+                        Patient Information
                       </th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 uppercase tracking-wider">
-                        Patient Name
+                      <th className="px-8 py-5 text-left text-sm font-bold text-gray-900 uppercase tracking-wider">
+                        Contact Details
                       </th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 uppercase tracking-wider">
-                        Email Address
+                      <th className="px-8 py-5 text-left text-sm font-bold text-gray-900 uppercase tracking-wider">
+                        Basic Info
                       </th>
-                      <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 uppercase tracking-wider">
+                      <th className="px-8 py-5 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
@@ -738,56 +959,58 @@ const DoctorPage = () => {
                       patients.map((patient, index) => (
                         <tr
                           key={patient.id}
-                          className={`hover:bg-orange-50 transition-colors duration-200 ${
-                            index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
+                          className={`hover:bg-orange-50/50 transition-colors duration-200 ${
+                            index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
                           }`}
                         >
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold">
-                                {patient.id?.toString().slice(-2) || "NA"}
+                          <td className="px-8 py-6 whitespace-nowrap">
+                            <div className="flex items-center space-x-4">
+                              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center text-white font-bold shadow-md">
+                                {patient.fullName?.charAt(0)?.toUpperCase() || patient.id?.toString().slice(-2) || "P"}
                               </div>
                               <div>
-                                <div className="text-sm font-medium text-gray-900">
-                                  #{patient.id}
+                                <div className="text-lg font-bold text-gray-900">
+                                  {patient.fullName || "N/A"}
                                 </div>
-                                <div className="text-xs text-gray-500">
-                                  ID: {patient.id}
+                                <div className="text-sm text-gray-500">
+                                  Patient ID: #{patient.id}
                                 </div>
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-8 py-6 whitespace-nowrap">
                             <div className="text-sm">
                               <div className="font-semibold text-gray-900">
-                                {patient.fullName || "N/A"}
+                                {patient.email || "No email provided"}
                               </div>
                               <div className="text-gray-500">
-                                {patient.age ? `${patient.age} years old` : "Age not specified"}
+                                Contact information
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">
-                              {patient.email || "No email provided"}
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              {patient.gender || "Gender not specified"}
+                          <td className="px-8 py-6 whitespace-nowrap">
+                            <div className="text-sm">
+                              <div className="font-semibold text-gray-900">
+                                {patient.age ? `${patient.age} years old` : "Age not specified"}
+                              </div>
+                              <div className="text-gray-500">
+                                {patient.gender || "Gender not specified"}
+                              </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <td className="px-8 py-6 whitespace-nowrap text-center">
                             <div className="flex items-center justify-center space-x-3">
                               <button
                                 onClick={() => navigate("/model-response")}
-                                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-sm font-medium rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-sm font-semibold rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg"
                               >
-                                <Eye size={16} className="mr-2" />
-                                Make Analysis
+                                <BarChart3 size={16} className="mr-2" />
+                                Analyze
                               </button>
                               
                               <button
                                 onClick={() => handleDeletePatient(patient.id)}
-                                className="inline-flex items-center px-3 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-medium rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                                className="inline-flex items-center px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-semibold rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg"
                               >
                                 <Trash2 size={16} />
                               </button>
@@ -797,24 +1020,24 @@ const DoctorPage = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="4" className="px-6 py-12 text-center">
-                          <div className="flex flex-col items-center space-y-4">
-                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                              <Users size={32} className="text-gray-400" />
+                        <td colSpan="4" className="px-8 py-16 text-center">
+                          <div className="flex flex-col items-center space-y-6">
+                            <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center shadow-lg">
+                              <Users size={40} className="text-gray-400" />
                             </div>
                             <div>
-                              <h3 className="text-lg font-medium text-gray-900">No patients found</h3>
-                              <p className="text-gray-500 mt-1">
-                                Start by adding your first patient to the system.
+                              <h3 className="text-xl font-bold text-gray-900 mb-2">No patients found</h3>
+                              <p className="text-gray-500 mb-6">
+                                Start building your patient database by adding your first patient.
                               </p>
+                              <button
+                                onClick={() => setActiveTab("add-patient")}
+                                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-xl hover:from-purple-700 hover:to-violet-700 transition-all duration-200 shadow-md hover:shadow-lg font-semibold"
+                              >
+                                <UserPlus size={18} className="mr-2" />
+                                Add First Patient
+                              </button>
                             </div>
-                            <button
-                              onClick={() => setActiveTab("add-patient")}
-                              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-lg hover:from-purple-700 hover:to-violet-700 transition-all duration-200 shadow-md hover:shadow-lg"
-                            >
-                              <UserPlus size={16} className="mr-2" />
-                              Add First Patient
-                            </button>
                           </div>
                         </td>
                       </tr>
@@ -824,11 +1047,11 @@ const DoctorPage = () => {
               </div>
               
               {patients.length > 0 && (
-                <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
+                <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-4 border-t border-gray-200">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2 text-sm text-gray-500">
-                      <Database size={16} />
-                      <span>Total: {patients.length} patient{patients.length !== 1 ? 's' : ''}</span>
+                    <div className="flex items-center space-x-3 text-sm text-gray-600">
+                      <Database size={18} />
+                      <span className="font-semibold">Total: {patients.length} patient{patients.length !== 1 ? 's' : ''}</span>
                     </div>
                     <div className="text-xs text-gray-400">
                       Last updated: {new Date().toLocaleTimeString()}

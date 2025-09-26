@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from "../context/AuthContext";
 import { 
   User, 
   Activity, 
@@ -10,6 +11,9 @@ import {
   Scale,
   Clock,
   Apple,
+  Flame,
+   Shield, 
+   AlertTriangle, 
   AlertCircle,
   CheckCircle,
   Calendar,
@@ -17,11 +21,15 @@ import {
   Loader2,
   Search,
   Info,
-  Utensils
+  Utensils,
+  Moon,
+  Sun,
 } from 'lucide-react';
+import AccessDenied from './AccessDenied';
 
 const PatientPage = () => {
   const [token, setToken] = useState('');
+  const { user } = useAuth();
   const [responseData, setResponseData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -77,6 +85,23 @@ const PatientPage = () => {
       [day]: !prev[day]
     }));
   };
+  /*
+  // Compute role safely
+      const role = user?.role; // directly from the stored object
+      console.log(role)
+    
+      // Wait until user state is available
+      if (user === undefined) {
+        return <div>Loading...</div>; // Or a spinner
+      }
+    
+      // Block access if not admin
+     if (!user || role !== "PATIENT") {
+      return <AccessDenied roleName="patient" />;
+    }
+      */
+    
+    
 
   const renderPatientInfo = () => {
     if (!responseData?.patient && !responseData?.doctor) return null;
@@ -266,6 +291,129 @@ const PatientPage = () => {
             </div>
           )}
         </div>
+        {/* Caloric Profile */}
+<div className="mb-6">
+  <button
+    onClick={() => toggleSection("caloric")}
+    className="flex items-center w-full text-left p-4 bg-gradient-to-r from-red-50 to-red-100 rounded-xl hover:from-red-100 hover:to-red-150 transition-all duration-200 border border-red-200"
+  >
+    {expandedSections.caloric ? <ChevronDown className="text-red-600" /> : <ChevronRight className="text-red-600" />}
+    <Flame className="ml-2 mr-3 h-5 w-5 text-red-600" />
+    <span className="font-semibold text-red-800">Caloric Profile</span>
+  </button>
+  {expandedSections.caloric && analysis.caloric_profile && (
+    <div className="mt-4 p-6 bg-red-50 rounded-xl border border-red-100 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="p-4 bg-white rounded-xl shadow-sm">
+        <span className="text-sm text-gray-600 block">BMR</span>
+        <p className="text-xl font-bold text-red-800">{analysis.caloric_profile.bmr} kcal</p>
+      </div>
+      <div className="p-4 bg-white rounded-xl shadow-sm">
+        <span className="text-sm text-gray-600 block">TDEE</span>
+        <p className="text-xl font-bold text-red-800">{analysis.caloric_profile.tdee} kcal</p>
+      </div>
+      <div className="p-4 bg-white rounded-xl shadow-sm">
+        <span className="text-sm text-gray-600 block">Target Calories</span>
+        <p className="text-xl font-bold text-red-800">{analysis.caloric_profile.target_daily_calories} kcal</p>
+      </div>
+      <div className="p-4 bg-white rounded-xl shadow-sm">
+        <span className="text-sm text-gray-600 block">Weekly Calories</span>
+        <p className="text-xl font-bold text-red-800">{analysis.caloric_profile.weekly_calories} kcal</p>
+      </div>
+    </div>
+  )}
+</div>
+
+{/* Micronutrient Targets */}
+<div className="mb-6">
+  <button
+    onClick={() => toggleSection("micronutrients")}
+    className="flex items-center w-full text-left p-4 bg-gradient-to-r from-teal-50 to-teal-100 rounded-xl hover:from-teal-100 hover:to-teal-150 transition-all duration-200 border border-teal-200"
+  >
+    {expandedSections.micronutrients ? <ChevronDown className="text-teal-600" /> : <ChevronRight className="text-teal-600" />}
+    <Shield className="ml-2 mr-3 h-5 w-5 text-teal-600" />
+    <span className="font-semibold text-teal-800">Micronutrient Targets</span>
+  </button>
+  {expandedSections.micronutrients && analysis.micronutrient_targets && (
+    <div className="mt-4 p-6 bg-teal-50 rounded-xl border border-teal-100 grid grid-cols-2 md:grid-cols-3 gap-4">
+      {Object.entries(analysis.micronutrient_targets).map(([nutrient, value]) => (
+        <div key={nutrient} className="p-4 bg-white rounded-xl shadow-sm">
+          <span className="text-sm text-gray-600 block capitalize">{nutrient.replace(/_/g, " ")}</span>
+          <p className="text-lg font-bold text-teal-800">{value}</p>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
+{/* Health Risk Assessment */}
+<div className="mb-6">
+  <button
+    onClick={() => toggleSection("risks")}
+    className="flex items-center w-full text-left p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-xl hover:from-yellow-100 hover:to-yellow-150 transition-all duration-200 border border-yellow-200"
+  >
+    {expandedSections.risks ? <ChevronDown className="text-yellow-600" /> : <ChevronRight className="text-yellow-600" />}
+    <AlertTriangle className="ml-2 mr-3 h-5 w-5 text-yellow-600" />
+    <span className="font-semibold text-yellow-800">Health Risk Assessment</span>
+  </button>
+  {expandedSections.risks && analysis.health_risk_assessment && (
+    <div className="mt-4 p-6 bg-yellow-50 rounded-xl border border-yellow-100 grid grid-cols-2 md:grid-cols-3 gap-4">
+      {Object.entries(analysis.health_risk_assessment)
+        .filter(([key]) => key !== "risk_factors")
+        .map(([risk, value]) => (
+          <div key={risk} className="p-4 bg-white rounded-xl shadow-sm">
+            <span className="text-sm text-gray-600 block capitalize">{risk.replace(/_/g, " ")}</span>
+            <p className="text-lg font-bold text-yellow-800">{value}</p>
+          </div>
+        ))}
+    </div>
+  )}
+</div>
+
+{/* Dietary Constraints */}
+<div className="mb-6">
+  <button
+    onClick={() => toggleSection("constraints")}
+    className="flex items-center w-full text-left p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl hover:from-green-100 hover:to-green-150 transition-all duration-200 border border-green-200"
+  >
+    {expandedSections.constraints ? <ChevronDown className="text-green-600" /> : <ChevronRight className="text-green-600" />}
+    <Utensils className="ml-2 mr-3 h-5 w-5 text-green-600" />
+    <span className="font-semibold text-green-800">Dietary Constraints</span>
+  </button>
+  {expandedSections.constraints && analysis.dietary_constraints && (
+    <div className="mt-4 p-6 bg-green-50 rounded-xl border border-green-100 space-y-4">
+      <p><strong>Diet Type:</strong> {analysis.dietary_constraints.diet_type}</p>
+      <p><strong>Allergies:</strong> {analysis.dietary_constraints.allergies.join(", ") || "None"}</p>
+      <p><strong>Food Intolerances:</strong> {analysis.dietary_constraints.food_intolerances.join(", ") || "None"}</p>
+      <p><strong>Medical Conditions:</strong> {analysis.dietary_constraints.medical_conditions.join(", ") || "None"}</p>
+      <p><strong>Preferences:</strong> {analysis.dietary_constraints.cuisine_preferences.join(", ")}</p>
+      <p><strong>Favorite Foods:</strong> {analysis.dietary_constraints.favorite_foods.join(", ")}</p>
+      <p><strong>Disliked Foods:</strong> {analysis.dietary_constraints.disliked_foods.join(", ")}</p>
+    </div>
+  )}
+</div>
+
+{/* Lifestyle Factors */}
+<div className="mb-6">
+  <button
+    onClick={() => toggleSection("lifestyle")}
+    className="flex items-center w-full text-left p-4 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-xl hover:from-indigo-100 hover:to-indigo-150 transition-all duration-200 border border-indigo-200"
+  >
+    {expandedSections.lifestyle ? <ChevronDown className="text-indigo-600" /> : <ChevronRight className="text-indigo-600" />}
+    <Sun className="ml-2 mr-3 h-5 w-5 text-indigo-600" />
+    <span className="font-semibold text-indigo-800">Lifestyle Factors</span>
+  </button>
+  {expandedSections.lifestyle && analysis.lifestyle_factors && (
+    <div className="mt-4 p-6 bg-indigo-50 rounded-xl border border-indigo-100 grid grid-cols-2 md:grid-cols-3 gap-4">
+      {Object.entries(analysis.lifestyle_factors).map(([factor, value]) => (
+        <div key={factor} className="p-4 bg-white rounded-xl shadow-sm">
+          <span className="text-sm text-gray-600 block capitalize">{factor.replace(/_/g, " ")}</span>
+          <p className="text-lg font-bold text-indigo-800">{value || "N/A"}</p>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
 
         {/* Macronutrient Targets */}
         <div className="mb-6">
@@ -331,6 +479,7 @@ const PatientPage = () => {
                 </div>
               </div>
             </div>
+            
           )}
         </div>
       </div>

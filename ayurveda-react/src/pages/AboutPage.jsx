@@ -33,7 +33,7 @@ export default function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen text-gray-900">
+   <div className="min-h-screen w-full bg-gradient-to-br from-amber-300 via-green-200 to-orange-300">
         <Navbar />
       <main className="max-w-6xl mx-auto px-6 py-12 mt-10 font-[Poppins]">
         <section id="hero" className="grid md:grid-cols-2 gap-8 items-center">
@@ -51,7 +51,7 @@ export default function AboutPage() {
             <h3 className="text-lg font-semibold">Quick preview</h3>
             <ul className="mt-4 space-y-3 text-gray-700">
               <li className="flex items-start gap-3">
-                <div className="w-2 h-2 mt-2 rounded-full bg-emerald-400" />
+                <div className="w-2 h-2 mt-2 rounded-full bg-white" />
                 <div>
                   <div className="font-medium">Input patient parameters</div>
                   <div className="text-sm text-gray-500">Prakriti, digestion, allergies, medications, goals.</div>
@@ -65,7 +65,7 @@ export default function AboutPage() {
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <div className="w-2 h-2 mt-2 rounded-full bg-indigo-300" />
+                <div className="w-2 h-2 mt-2 rounded-full bg-white" />
                 <div>
                   <div className="font-medium">Export & follow up</div>
                   <div className="text-sm text-gray-500">PDF/print or save to patient history for follow‑up.</div>
@@ -75,13 +75,13 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section id="mission" className="mt-14 bg-gradient-to-r from-green-300 to-green-200 p-8 rounded-2xl">
+        <section id="mission" className="mt-14 bg-gradient-to-r from-amber-300 via-green-200 to-orange-300 p-8 rounded-2xl">
           <h3 className="text-2xl font-semibold">Our Mission</h3>
           <p className="mt-3 text-gray-700">We empower Ayurvedic practitioners and clinical dietitians with an easy-to-use platform that turns clinical intake into personalized, culturally-aware diet recommendations. Our goal is to increase quality, consistency, and patient adherence while respecting classical Ayurvedic knowledge.</p>
         </section>
 
         <section id="how" className="mt-10 grid md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 bg-green-200 rounded-2xl shadow p-6">
+          <div className="md:col-span-2 from-amber-300 via-green-200 to-orange-300 rounded-2xl shadow p-6">
             <h4 className="text-xl font-semibold">How it works</h4>
             <ol className="mt-4 space-y-4 text-gray-700 list-decimal list-inside">
               <li><strong>Intake:</strong> Dietitian fills in patient parameters — prakriti, vikriti, digestion, current meds, allergies, lifestyle and goals.</li>
@@ -117,7 +117,7 @@ export default function AboutPage() {
           <div className="mt-6 grid sm:grid-cols-2 md:grid-cols-3 gap-6">
             {team.map((m) => (
               <div key={m.name} className="bg-green-200 p-4 rounded-xl shadow-sm flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-green-700 text-white flex items-center justify-center text-xl font-semibold">{m.name.split(" ").map(n => n[0]).slice(0,2).join("")}</div>
+                <div className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center text-xl font-semibold">{m.name.split(" ").map(n => n[0]).slice(0,2).join("")}</div>
                 <div>
                   <div className="font-medium">{m.name}</div>
                   <div className="text-sm text-gray-500">{m.role}</div>
