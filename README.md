@@ -88,7 +88,7 @@ AyurDiet provides an **end-to-end cloud-based system** that empowers Ayurvedic p
 
 * **Frontend:** Netlify
 * **Backend:** GitHub → Render
-* **Database:** MySQL on Railway
+* **Database:** postgresql (neon.tech)
 
 ---
 
